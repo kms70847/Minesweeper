@@ -87,13 +87,13 @@ def rendered(state):
 
 random.seed(0)
 state = State(10, 10, 5)
-mode = "U"
+mode = uncovered
 while True:
     print rendered(state)
-    print "Current mode:", mode
+    print "Current mode:", {uncovered: "U", flagged: "F", unsure: "N"}[mode]
     response = raw_input("Enter coordinates or change mode with (U)ncover / (F)lag / u(N)sure:").upper()
     if response in ("U", "F", "N"):
-        mode = response
+        mode = {"U": uncovered, "F": flagged, "N": unsure}[response]
     else:
         try:
             x,y = map(int, response.split())
@@ -105,21 +105,16 @@ while True:
         if not state.mines.in_range(p):
             print "Sorry, that point is not in range"
             continue
-        if mode == "F":
-            if state.cell_states[p] in (covered, unsure):
-                state.cell_states[p] = flagged
-            elif state.cell_states[p] == flagged:
+        if mode in (flagged, unsure):
+            if state.cell_states[p] == uncovered:
+                print "Sorry, can't mark uncovered cells"
+            elif state.cell_states[p] == mode:
                 state.cell_states[p] = covered
             else:
-                print "Sorry, can't flag uncovered cells"
-        elif mode == "N":
-            if state.cell_states[p] in (covered, flagged):
-                state.cell_states[p] = unsure
-            elif state.cell_states[p] == unsure:
-                state.cell_states[p] = covered
-            else:
-                print "Sorry, can't mark uncovered cells as unsure"
-        else:
+                state.cell_states[p] = mode
+        elif mode == uncovered:
             to_uncover = state.get_group(p)
             for pos in to_uncover:
                 state.cell_states[pos] = uncovered
+        else:
+            raise Exception("unknown mode {}".format(mode))
