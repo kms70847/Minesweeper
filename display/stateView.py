@@ -43,8 +43,8 @@ class StateView(ImageGrid):
         if button == "middle" and state == "up":
             if not (self.in_range(pos) and pos == last_down_pos):
                 return
-            print "Middle click detected"
-            flagged_neighbor_count = self.state.state_count(pos, self.state.flagged)
-            if self.state.count(pos) <= flagged_neighbor_count:
-                for cell in self.state.cell_states.neighbors_in_range(pos):
-                    self.uncover(cell)
+            if self.state.cell_states[pos] == self.state.uncovered:
+                flagged_neighbor_count = self.state.state_count(pos, self.state.flagged)
+                if self.state.count(pos) <= flagged_neighbor_count:
+                    for cell in self.state.cell_states.neighbors_in_range(pos):
+                        self.uncover(cell)
