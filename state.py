@@ -33,3 +33,15 @@ class State:
                     if neighbor not in seen and self.cell_states[neighbor] == State.covered:
                         to_visit.add(neighbor)
         return seen
+
+    def get_name(self, p):
+        if self.cell_states[p] == State.uncovered:
+            if self.mines[p]:
+                return "mine"
+            else:
+                if self.count(p) == 0:
+                    return "uncovered"
+                else:
+                    return str(self.count(p))
+        else:
+            return {State.covered: "covered", State.flagged: "flagged", State.unsure: "unsure"}[self.cell_states[p]]
