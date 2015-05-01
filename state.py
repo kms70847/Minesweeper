@@ -16,6 +16,9 @@ class State:
     def count(self, p):
         return sum(1 for cell in self.mines.neighbors_in_range(p) if self.mines[cell])
 
+    def state_count(self, p, state):
+        return sum(1 for cell in self.cell_states.neighbors_in_range(p) if self.cell_states[cell] == state)
+
     #returns a collection of the cells that would be uncovered if `p` was uncovered.
     #cells with a count of 0 uncover their neighbors in a chain reaction.
     def get_group(self, p):

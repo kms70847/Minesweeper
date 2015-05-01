@@ -48,10 +48,12 @@ class ImageGrid(Canvas):
 
         self.callbacks = []
         self.button_pressed_position = {key: None for key in ["left", "right"]}
-        self.bind("<ButtonPress-1>"  , lambda event: self.button_event(event, "left" , "down"))
-        self.bind("<ButtonRelease-1>", lambda event: self.button_event(event, "left" , "up"  ))
-        self.bind("<ButtonPress-3>"  , lambda event: self.button_event(event, "right", "down"))
-        self.bind("<ButtonRelease-3>", lambda event: self.button_event(event, "right", "up"  ))
+        self.bind("<ButtonPress-1>"  , lambda event: self.button_event(event, "left"  , "down"))
+        self.bind("<ButtonRelease-1>", lambda event: self.button_event(event, "left"  , "up"  ))
+        self.bind("<ButtonPress-2>"  , lambda event: self.button_event(event, "middle", "down"))
+        self.bind("<ButtonRelease-2>", lambda event: self.button_event(event, "middle", "up"  ))
+        self.bind("<ButtonPress-3>"  , lambda event: self.button_event(event, "right" , "down"))
+        self.bind("<ButtonRelease-3>", lambda event: self.button_event(event, "right" , "up"  ))
 
     def button_event(self, event, button, state):
         row = (event.y - self.left_margin) / self.image_height
