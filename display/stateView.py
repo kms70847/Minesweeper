@@ -1,5 +1,14 @@
 from imageGrid import ImageGrid
 
+"""
+returns the element in `seq` that appears after `item`.
+wraps around to the beginning of the list if necessary.
+"""
+def after(seq, item):
+    idx = seq.index(item)
+    idx = (idx + 1) % len(seq)
+    return seq[idx]
+
 class StateView(ImageGrid):
     def __init__(self, root, state, **kwargs):
         self.state = state
@@ -12,10 +21,20 @@ class StateView(ImageGrid):
 
         self.bind_cell(self.clicked)
     def clicked(self, event, pos, button, state, last_down_pos):
-        if state == "up":
+        if button == "left" and state == "up":
             if not (self.in_range(pos) and pos == last_down_pos):
                 return
             if self.state.cell_states[pos] == self.state.covered:
                 for cell in self.state.get_group(pos):
                     self.state.cell_states[cell] = self.state.uncovered
                     self.set_image(cell, self.state.get_name(cell))
+        if button == "right" and state == "down":
+            if not self.in_range(pos):
+                return
+            state = self.state.cell_states[pos]
+            valid_states = [self.state.covered, self.state.flagged, self.state.unsure]
+            if state not in valid_states: 
+                return
+            new_state = after(valid_states, state)
+            self.state.cell_states[pos] = new_state
+            self.set_image(pos, self.state.get_name(pos))
