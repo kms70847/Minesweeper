@@ -1,5 +1,6 @@
 from Tkinter import *
 from PIL import Image, ImageTk
+from geometry import Point
 
 class ImageGrid(Canvas):
     """
@@ -41,8 +42,9 @@ class ImageGrid(Canvas):
             for j in range(self.rows):
                 x = self.left_margin + i * self.image_width
                 y = self.left_margin + j * self.image_height
-                self.images[i,j] = default_image
-                self.ids[i,j] = self.create_image(x,y, image=self.images_by_name[default_image], anchor="nw")
+                cell = Point(i,j)
+                self.images[cell] = default_image
+                self.ids[cell] = self.create_image(x,y, image=self.images_by_name[default_image], anchor="nw")
 
         self.callbacks = []
         self.button_pressed_position = {key: None for key in ["left", "right"]}
@@ -54,11 +56,12 @@ class ImageGrid(Canvas):
     def button_event(self, event, button, state):
         row = (event.y - self.left_margin) / self.image_height
         col = (event.x - self.left_margin) / self.image_width
+        cur = Point(col, row)
         if state == "down":
-            self.button_pressed_position[button] = (col, row)
+            self.button_pressed_position[button] = Point(col, row)
         
         for callback in self.callbacks:
-            callback(event, (col, row), button, state, self.button_pressed_position[button])
+            callback(event, cur, button, state, self.button_pressed_position[button])
 
     """
         registers a callback with the class, which triggers on mouse movement.
@@ -72,16 +75,16 @@ class ImageGrid(Canvas):
     def bind_cell(self, callback):
         self.callbacks.append(callback)
 
-    def get_image(self, x,y):
-        return self.images[x,y]
+    def get_image(self, p):
+        return self.images[p]
 
-    def set_image(self, x,y,name):
-        id = self.ids[x,y]
+    def set_image(self, p,name):
+        id = self.ids[p]
         self.itemconfig(id, image = self.images_by_name[name])
-        self.images[x,y] = name
+        self.images[p] = name
 
-    def in_range(self, x, y):
-        return 0 <= x < self.cols and 0 <= y < self.rows
+    def in_range(self, p):
+        return 0 <= p.x < self.cols and 0 <= p.y < self.rows
 
     def load_image(self, filename):
         if filename.endswith(".gif"):
