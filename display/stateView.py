@@ -4,7 +4,7 @@ class StateView(ImageGrid):
     def __init__(self, root, state, **kwargs):
         self.state = state
         
-        kwargs["names"] = {name: "images/{}.png".format(name) for name in "covered uncovered 1 2 3 4 5 6 7 8 flagged unsure".split()}
+        kwargs["names"] = {name: "images/{}.png".format(name) for name in "covered uncovered 1 2 3 4 5 6 7 8 flagged unsure mine".split()}
         kwargs["rows"] = state.height
         kwargs["cols"] = state.width
         kwargs["default"] = "covered"
