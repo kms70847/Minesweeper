@@ -28,6 +28,10 @@ class State:
         if self.cell_states[p] in (State.uncovered, State.flagged):
             return seen
 
+        if self.mines[p]:
+            seen.add(p)
+            return seen
+
         while to_visit:
             cur = to_visit.pop()
             seen.add(cur)
