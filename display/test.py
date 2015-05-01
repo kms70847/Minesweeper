@@ -16,6 +16,9 @@ class ImageButton(Button):
         self.config(image = self.photo)
 
 
+import random
+random.seed(0)
+
 #beginner: 9,9,10
 #intermediate: 16, 16, 40
 #advanced: 16, 30, 99
