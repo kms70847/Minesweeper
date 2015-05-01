@@ -22,6 +22,7 @@ class StateView(ImageGrid):
         self.bind_cell(self.clicked)
 
         self.state.bind(self.state_changed)
+
     def state_changed(self, event, *args):
         if event == "uncovered":
             cells = args[0]
@@ -35,6 +36,7 @@ class StateView(ImageGrid):
                 print "Win!!!"
             elif self.state.game_state == self.state.lost:
                 print "Lost..."
+
     def clicked(self, event, pos, button, state, last_down_pos):
         if self.state.game_state != self.state.in_progress:
             return
