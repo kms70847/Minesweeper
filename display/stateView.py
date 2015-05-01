@@ -5,8 +5,8 @@ class StateView(ImageGrid):
         self.state = state
         
         kwargs["names"] = {
-            "covered": "img.png",
-            "uncovered": "img2.gif"
+            "covered": "images/img.png",
+            "uncovered": "images/img2.gif"
         }
         kwargs["rows"] = state.height
         kwargs["cols"] = state.width
