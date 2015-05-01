@@ -26,14 +26,13 @@ class ImageGrid(Canvas):
         self.rows = kwargs.pop("rows")
         self.cols = kwargs.pop("cols")
         #tkinter does weird stuff with the edges of a Canvas, so we have to fudge the margins to compensate.
-        self.right_margin = kwargs.pop("margin", 5) - 2
+        self.right_margin = kwargs.pop("margin", 0) - 2
         self.left_margin = self.right_margin + 4
         
         kwargs["width"]  = self.cols * self.image_width  + self.left_margin + self.right_margin
         kwargs["height"] = self.rows * self.image_height + self.left_margin + self.right_margin
         Canvas.__init__(self, root, **kwargs)
 
-        self.create_rectangle(-10,-10, 1000, 1000, fill="#AAFFAA")
 
 
         self.ids = {}
