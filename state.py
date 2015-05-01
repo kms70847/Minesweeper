@@ -6,6 +6,7 @@ class State:
     covered, uncovered, flagged, unsure = 1,2,3,4
     def __init__(self, width, height, num_mines):
         assert num_mines <= width*height
+        self.width, self.height = width, height
         self.mines = Matrix(width, height)
         candidate_positions = [Point(x,y) for x in range(width) for y in range(height)]
         for location in random.sample(candidate_positions, num_mines):

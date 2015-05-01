@@ -16,9 +16,9 @@ def rendered(state):
         else:
             return {State.covered: ".", State.flagged: "X", State.unsure: "?"}[cell_state]
     ret = []
-    for j in range(state.mines.height):
+    for j in range(state.height):
         row = []
-        for i in range(state.mines.width):
+        for i in range(state.width):
             row.append(glyph(Point(i,j)))
         ret.append("".join(row))
     return "\n".join(ret)
