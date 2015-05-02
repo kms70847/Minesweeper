@@ -1,6 +1,7 @@
 from Tkinter import *
 from PIL import Image, ImageTk
 from stateView import StateView
+from settingsWindow import SettingsWindow
 
 import sys
 import os.path
@@ -28,11 +29,21 @@ def new_game():
         print "new game!"
         state_view.grid_forget()
         state.unbind(state_view.state_changed) #bit of an encapsulation violation here...
-    state = State(16, 16, 4)
+    state = State(*cur_difficulty[1:])
     state.bind(state_changed)
     state_view = StateView(root, state)
     state_view.grid(row=1, column=0)
     reset_button.set_image("images/covered.png")
+
+def show_settings():
+    global cur_difficulty
+    window = SettingsWindow(root, cur_difficulty)
+    window.grab_set()
+    root.wait_window(window)
+    if window.setting_chosen != None:
+        cur_difficulty = window.setting_chosen
+        new_game()
+
 
 import random
 random.seed(0)
@@ -40,7 +51,16 @@ random.seed(0)
 #beginner: 9,9,10
 #intermediate: 16, 16, 40
 #advanced: 16, 30, 99
+cur_difficulty = ("Intermediate", 16, 16, 40)
 root = Tk()
+
+menubar = Menu(root)
+root.config(menu=menubar)
+gamemenu = Menu(menubar, tearoff=0)
+menubar.add_cascade(label="Game", menu=gamemenu)
+gamemenu.add_command(label = "New", command=new_game)
+gamemenu.add_command(label = "Difficulty", command=show_settings)
+gamemenu.add_command(label = "Exit", command=root.quit)
 
 reset_button = ImageButton(root, "images/covered.png", command=new_game)
 reset_button.grid(row=0, column=0)
