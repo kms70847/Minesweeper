@@ -55,6 +55,9 @@ class SettingsWindow(Toplevel):
 
         custom_frame.pack(padx=(0,10))
 
+        if cur_setting[0] == "Custom":
+            self.v.set(len(self.settings)+1)
+
         button_row = Frame(self)
         Button(button_row, text="OK", width=10, command=self.ok_clicked).pack(side=LEFT, padx=10, pady=10)
         Button(button_row, text="Cancel", width=10, command=self.cancel_clicked).pack(side=RIGHT, padx=10, pady=10)
