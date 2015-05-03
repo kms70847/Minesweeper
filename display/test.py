@@ -26,7 +26,6 @@ def state_changed(event, *args):
 def new_game():
     global state_view, state
     if state_view is not None:
-        print "new game!"
         state_view.grid_forget()
         state.unbind(state_view.state_changed) #bit of an encapsulation violation here...
     state = State(*cur_difficulty[1:])
