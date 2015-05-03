@@ -65,14 +65,20 @@ gamemenu.add_command(label = "Difficulty", command=show_settings)
 gamemenu.add_command(label = "Exit", command=root.quit)
 
 action_bar = Frame(root)
+action_bar.grid_columnconfigure(0, weight=1)
+action_bar.grid_columnconfigure(1, weight=1)
+action_bar.grid_columnconfigure(2, weight=1)
+
+timer = NumberDisplay(action_bar)
+timer.grid(row=0, column=0, sticky="w")
 
 reset_button = ImageButton(action_bar, "images/covered.png", command=new_game)
-reset_button.grid(row=0, column=0)
+reset_button.grid(row=0, column=1)
 
 mine_counter = NumberDisplay(action_bar)
-mine_counter.grid(row=0,column=1)
+mine_counter.grid(row=0,column=2, sticky="e")
 
-action_bar.grid(row=0, column=0)
+action_bar.grid(row=0, column=0, sticky="we")
 
 
 state = None
