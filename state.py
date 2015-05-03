@@ -5,7 +5,7 @@ import random
 
 class State(Broadcaster):
     covered, uncovered, flagged, unsure = 1,2,3,4
-    won, lost, in_progress = 1,2,3
+    won, lost, not_started, in_progress = 1,2,3,4
     def __init__(self, width, height, num_mines):
         assert num_mines <= width*height
         Broadcaster.__init__(self)
@@ -17,7 +17,7 @@ class State(Broadcaster):
             self.mines[location] = True
         self.cell_states = Matrix(width, height, State.covered)
         self.cell_state_counts = {State.covered: width*height, State.uncovered: 0, State.flagged: 0, State.unsure: 0}
-        self.game_state = State.in_progress
+        self.game_state = State.not_started
     #returns the number of mines in adjacent cells
     def neighboring_mine_count(self, p):
         return sum(1 for cell in self.mines.neighbors_in_range(p) if self.mines[cell])
@@ -79,6 +79,9 @@ class State(Broadcaster):
         to_uncover = self.get_group(p)
         for cell in to_uncover:
             self.set_state(cell, State.uncovered)
+        if self.game_state == State.not_started:
+            self.game_state = State.in_progress
+            self.broadcast("started")
         self.broadcast("uncovered", to_uncover)
         if self.mines[p]:
             self.game_state = State.lost

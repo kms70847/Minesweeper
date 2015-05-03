@@ -38,7 +38,7 @@ class StateView(ImageGrid):
                         self.set_image(p, "mine")
 
     def clicked(self, event, pos, button, state, last_down_pos):
-        if self.state.game_state != self.state.in_progress:
+        if self.state.game_state not in {self.state.in_progress, self.state.not_started}:
             return
         if button == "left" and state == "up":
             if not (self.in_range(pos) and pos == last_down_pos):
