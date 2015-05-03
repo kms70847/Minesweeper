@@ -16,6 +16,7 @@ class State(Broadcaster):
         for location in random.sample(candidate_positions, num_mines):
             self.mines[location] = True
         self.cell_states = Matrix(width, height, State.covered)
+        self.cell_state_counts = {State.covered: width*height, State.uncovered: 0, State.flagged: 0, State.unsure: 0}
         self.game_state = State.in_progress
     #returns the number of mines in adjacent cells
     def neighboring_mine_count(self, p):
@@ -23,6 +24,9 @@ class State(Broadcaster):
 
     def neighboring_state_count(self, p, state):
         return sum(1 for cell in self.cell_states.neighbors_in_range(p) if self.cell_states[cell] == state)
+
+    def state_count(self, state):
+        return self.cell_state_counts[state]
 
     #returns a collection of the cells that would be uncovered if `p` was uncovered.
     #cells with a count of 0 uncover their neighbors in a chain reaction.
@@ -63,12 +67,18 @@ class State(Broadcaster):
             for j in range(self.height):
                 yield Point(i,j)
 
+    def set_state(self, p, state):
+        old_state = self.cell_states[p]
+        self.cell_state_counts[old_state] -= 1
+        self.cell_state_counts[state] += 1
+        self.cell_states[p] = state
+
     def uncover(self, p):
         if self.cell_states[p] not in {State.covered, State.unsure}:
             return
         to_uncover = self.get_group(p)
         for cell in to_uncover:
-            self.cell_states[cell] = State.uncovered
+            self.set_state(cell, State.uncovered)
         self.broadcast("uncovered", to_uncover)
         if self.mines[p]:
             self.game_state = State.lost
@@ -82,5 +92,5 @@ class State(Broadcaster):
     def mark(self, p, state):
         assert self.cell_states[p] != State.uncovered
         assert state in {State.flagged, State.unsure, State.covered}
-        self.cell_states[p] = state
+        self.set_state(p, state)
         self.broadcast("marked", p)
