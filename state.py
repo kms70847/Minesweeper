@@ -18,7 +18,7 @@ class State(Broadcaster):
         self.cell_states = Matrix(width, height, State.covered)
         self.game_state = State.in_progress
     #returns the number of mines in adjacent cells
-    def count(self, p):
+    def neighboring_mine_count(self, p):
         return sum(1 for cell in self.mines.neighbors_in_range(p) if self.mines[cell])
 
     def state_count(self, p, state):
@@ -40,7 +40,7 @@ class State(Broadcaster):
         while to_visit:
             cur = to_visit.pop()
             seen.add(cur)
-            if self.count(cur) == 0:
+            if self.neighboring_mine_count(cur) == 0:
                 for neighbor in self.mines.neighbors_in_range(cur):
                     if neighbor not in seen and self.cell_states[neighbor] == State.covered:
                         to_visit.add(neighbor)
@@ -51,10 +51,10 @@ class State(Broadcaster):
             if self.mines[p]:
                 return "mine"
             else:
-                if self.count(p) == 0:
+                if self.neighboring_mine_count(p) == 0:
                     return "uncovered"
                 else:
-                    return str(self.count(p))
+                    return str(self.neighboring_mine_count(p))
         else:
             return {State.covered: "covered", State.flagged: "flagged", State.unsure: "unsure"}[self.cell_states[p]]
 
