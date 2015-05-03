@@ -69,7 +69,10 @@ class SettingsWindow(Toplevel):
         if self.v.get() < len(self.settings):
             self.setting_chosen = self.settings[self.v.get()]
         else:
-            self.setting_chosen = ("Custom", self.custom_width.get(), self.custom_height.get(), self.custom_mines.get())
+            width, height, mines = self.custom_width.get(), self.custom_height.get(), self.custom_mines.get()
+            if width < 1 or height < 1 or width > 40 or height > 40 or mines > width * height:
+                return
+            self.setting_chosen = ("Custom", width, height, mines)
         self.destroy()
 
     def cancel_clicked(self):
