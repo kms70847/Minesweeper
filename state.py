@@ -21,7 +21,7 @@ class State(Broadcaster):
     def neighboring_mine_count(self, p):
         return sum(1 for cell in self.mines.neighbors_in_range(p) if self.mines[cell])
 
-    def state_count(self, p, state):
+    def neighboring_state_count(self, p, state):
         return sum(1 for cell in self.cell_states.neighbors_in_range(p) if self.cell_states[cell] == state)
 
     #returns a collection of the cells that would be uncovered if `p` was uncovered.

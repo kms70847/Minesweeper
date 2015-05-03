@@ -57,7 +57,7 @@ class StateView(ImageGrid):
             if not (self.in_range(pos) and pos == last_down_pos):
                 return
             if self.state.cell_states[pos] == self.state.uncovered:
-                flagged_neighbor_count = self.state.state_count(pos, self.state.flagged)
+                flagged_neighbor_count = self.state.neighboring_state_count(pos, self.state.flagged)
                 if self.state.neighboring_mine_count(pos) <= flagged_neighbor_count:
                     for cell in self.state.cell_states.neighbors_in_range(pos):
                         self.state.uncover(cell)
