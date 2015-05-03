@@ -7,7 +7,7 @@ class ImageGrid(Canvas):
         keyword arguments:
         names - a dictionary whose keys are strings and whose values are filenames.
         rows, cols - positive integers.
-        margin - a non-negative integer. default is 5.
+        margin - a non-negative integer. default is 0.
         default - a key from names. If none is supplied, the lexicographically first name will be chosen.
     """
     def __init__(self, root, **kwargs):
