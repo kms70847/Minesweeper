@@ -46,7 +46,8 @@ class ImageGrid(Canvas):
                 self.ids[cell] = self.create_image(x,y, image=self.images_by_name[default_image], anchor="nw")
 
         self.callbacks = []
-        self.button_pressed_position = {key: None for key in ["left", "right"]}
+        self.button_pressed_position = {key: None for key in ["left", "right", "middle"]}
+        self.button_states = {key: "up" for key in ["left", "right", "middle"]}
         self.bind("<ButtonPress-1>"  , lambda event: self.button_event(event, "left"  , "down"))
         self.bind("<ButtonRelease-1>", lambda event: self.button_event(event, "left"  , "up"  ))
         self.bind("<ButtonPress-2>"  , lambda event: self.button_event(event, "middle", "down"))
@@ -60,6 +61,9 @@ class ImageGrid(Canvas):
         cur = Point(col, row)
         if state == "down":
             self.button_pressed_position[button] = Point(col, row)
+            self.button_states[button] = "down"
+        else:
+            self.button_states[button] = "up"
         
         for callback in self.callbacks:
             callback(event, cur, button, state, self.button_pressed_position[button])

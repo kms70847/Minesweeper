@@ -40,11 +40,22 @@ class StateView(ImageGrid):
     def clicked(self, event, pos, button, state, last_down_pos):
         if self.state.game_state not in {self.state.in_progress, self.state.not_started}:
             return
-        if button == "left" and state == "up":
+
+        super_clicked = button in ("left", "right") and state == "up" and any(self.button_states[b] == "down" for b in ["left", "right"])
+        middle_clicked = button == "middle" and state == "up"
+
+        if super_clicked or middle_clicked:
+            if self.state.cell_states[pos] == self.state.uncovered:
+                flagged_neighbor_count = self.state.neighboring_state_count(pos, self.state.flagged)
+                if self.state.neighboring_mine_count(pos) <= flagged_neighbor_count:
+                    for cell in self.state.cell_states.neighbors_in_range(pos):
+                        self.state.uncover(cell)
+            
+        elif button == "left" and state == "up":
             if not (self.in_range(pos) and pos == last_down_pos):
                 return
             self.state.uncover(pos)
-        if button == "right" and state == "down":
+        elif button == "right" and state == "down":
             if not self.in_range(pos):
                 return
             state = self.state.cell_states[pos]
@@ -52,12 +63,4 @@ class StateView(ImageGrid):
             if state not in valid_states: 
                 return
             new_state = after(valid_states, state)
-            self.state.mark(pos, new_state)
-        if button == "middle" and state == "up":
-            if not (self.in_range(pos) and pos == last_down_pos):
-                return
-            if self.state.cell_states[pos] == self.state.uncovered:
-                flagged_neighbor_count = self.state.neighboring_state_count(pos, self.state.flagged)
-                if self.state.neighboring_mine_count(pos) <= flagged_neighbor_count:
-                    for cell in self.state.cell_states.neighbors_in_range(pos):
-                        self.state.uncover(cell)
+            self.state.mark(pos, new_state)        
