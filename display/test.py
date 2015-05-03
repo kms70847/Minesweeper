@@ -3,6 +3,7 @@ from PIL import Image, ImageTk
 from stateView import StateView
 from settingsWindow import SettingsWindow
 from numberDisplay import NumberDisplay
+from time import time
 
 import sys
 import os.path
@@ -18,15 +19,24 @@ class ImageButton(Button):
         self.config(image = self.photo)
 
 def state_changed(event, *args):
+    global start_time
     mine_counter.set(state.num_mines - state.state_count(state.flagged))
-    if event == "game_ended":
+    if event == "started":
+        start_time = time()
+    elif event == "game_ended":
         if state.game_state == state.lost:
             reset_button.set_image("images/mine.png")
         elif state.game_state == state.won:
             reset_button.set_image("images/flagged.png")
 
+def on_idle():
+    if state.game_state == state.in_progress:
+        cur_time = int(time() - start_time)
+        timer.set(min(cur_time, 999))
+    root.after(100, on_idle)
+
 def new_game():
-    global state_view, state
+    global state_view, state, start_time
     if state_view is not None:
         state_view.grid_forget()
         state.unbind(state_view.state_changed) #bit of an encapsulation violation here...
@@ -36,6 +46,7 @@ def new_game():
     state_view.grid(row=1, column=0)
     reset_button.set_image("images/covered.png")
     mine_counter.set(state.num_mines)
+    timer.set(None)
 
 def show_settings():
     global cur_difficulty
@@ -83,6 +94,8 @@ action_bar.grid(row=0, column=0, sticky="we")
 
 state = None
 state_view = None
+start_time = None
 new_game()
 
+root.after(100, on_idle)
 root.mainloop()
