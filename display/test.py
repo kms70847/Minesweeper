@@ -2,6 +2,7 @@ from Tkinter import *
 from PIL import Image, ImageTk
 from stateView import StateView
 from settingsWindow import SettingsWindow
+from numberDisplay import NumberDisplay
 
 import sys
 import os.path
@@ -11,12 +12,13 @@ from state import State
 class ImageButton(Button):
     def __init__(self, root, filename, **kwargs):
         self.photo = ImageTk.PhotoImage(Image.open(filename))
-        Button.__init__(self, image=self.photo, **kwargs)
+        Button.__init__(self, root, image=self.photo, **kwargs)
     def set_image(self, filename):
         self.photo = ImageTk.PhotoImage(Image.open(filename))
         self.config(image = self.photo)
 
 def state_changed(event, *args):
+    mine_counter.set(state.num_mines - state.state_count(state.flagged))
     if event == "game_ended":
         if state.game_state == state.lost:
             reset_button.set_image("images/mine.png")
@@ -33,6 +35,7 @@ def new_game():
     state_view = StateView(root, state)
     state_view.grid(row=1, column=0)
     reset_button.set_image("images/covered.png")
+    mine_counter.set(state.num_mines)
 
 def show_settings():
     global cur_difficulty
@@ -61,8 +64,16 @@ gamemenu.add_command(label = "New", command=new_game)
 gamemenu.add_command(label = "Difficulty", command=show_settings)
 gamemenu.add_command(label = "Exit", command=root.quit)
 
-reset_button = ImageButton(root, "images/covered.png", command=new_game)
+action_bar = Frame(root)
+
+reset_button = ImageButton(action_bar, "images/covered.png", command=new_game)
 reset_button.grid(row=0, column=0)
+
+mine_counter = NumberDisplay(action_bar)
+mine_counter.grid(row=0,column=1)
+
+action_bar.grid(row=0, column=0)
+
 
 state = None
 state_view = None
