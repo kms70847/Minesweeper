@@ -1,4 +1,5 @@
 from Tkinter import *
+import tkSimpleDialog
 from PIL import Image, ImageTk
 from time import time
 
@@ -30,6 +31,12 @@ def state_changed(event, *args):
             reset_button.set_image("images/mine.png")
         elif state.game_state == state.won:
             reset_button.set_image("images/flagged.png")
+            cur_time = int(time() - start_time)
+            if highscores.qualifies(cur_difficulty[0], cur_time):
+                name = tkSimpleDialog.askstring("Enter name", "New high score! Enter name:", initialvalue = "Anonymous", parent=root)
+                if name:
+                    highscores.update_scores(cur_difficulty[0], name, cur_time)
+                
 
 def on_idle():
     if state.game_state == state.in_progress:
