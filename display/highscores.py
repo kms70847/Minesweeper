@@ -1,4 +1,5 @@
 from Tkinter import *
+from collections import OrderedDict
 
 def try_load(filename, default=None):
     try:
@@ -9,11 +10,15 @@ def try_load(filename, default=None):
 
 def get_scores():
     default = (
-        ("Beginner", "Kevin", 999),
-        ("Intermediate", "Kevin", 999),
-        ("Expert", "Kevin", 999)
+        ("Beginner",     ("Kevin", 999)),
+        ("Intermediate", ("Kevin", 999)),
+        ("Expert",       ("Kevin", 999))
     )
+    default = OrderedDict(default)
     return try_load("high_scores.txt", default)
+
+def qualifies(level, score):
+    pass
 
 class HighScoreWindow(Toplevel):
     def __init__(self, root):
@@ -24,7 +29,8 @@ class HighScoreWindow(Toplevel):
 
         label_frame = Frame(self)
         label_frame.pack()
-        for y, data in enumerate(scores):
+        for y, (key, values) in enumerate(scores.iteritems()):
+            data = (key,) + values
             for x, value in enumerate(data):
                 Label(label_frame, text=value).grid(column=x, row=y)
 
