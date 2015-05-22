@@ -1,5 +1,8 @@
 from Tkinter import *
 from collections import OrderedDict
+import json
+
+score_filename = "high_scores.txt"
 
 def try_load(filename, default=None):
     try:
@@ -15,11 +18,17 @@ def get_scores():
         ("Expert",       ("Kevin", 999))
     )
     default = OrderedDict(default)
-    return try_load("high_scores.txt", default)
+    return try_load(score_filename, default)
 
 def qualifies(level, score):
     scores = get_scores()
     return level in scores and score < scores[level]
+
+def update_scores(level, name, score):
+    scores = get_scores()
+    scores[level] = (name, score)
+    with open(score_filename, "w") as file:
+        json.dump(scores, file)
 
 class HighScoreWindow(Toplevel):
     def __init__(self, root):
