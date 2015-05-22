@@ -18,7 +18,8 @@ def get_scores():
     return try_load("high_scores.txt", default)
 
 def qualifies(level, score):
-    pass
+    scores = get_scores()
+    return level in scores and score < scores[level]
 
 class HighScoreWindow(Toplevel):
     def __init__(self, root):
