@@ -83,11 +83,15 @@ class State(Broadcaster):
                     self.mines[candidate_p] = True
                     break
 
+        #can't click on flags or question marks
         if self.cell_states[p] not in {State.covered, State.unsure}:
             return
+
         to_uncover = self.get_group(p)
         for cell in to_uncover:
             self.set_state(cell, State.uncovered)
+
+        #broadcast events
         if self.game_state == State.not_started:
             self.game_state = State.in_progress
             self.broadcast("started")
