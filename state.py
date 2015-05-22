@@ -74,6 +74,15 @@ class State(Broadcaster):
         self.cell_states[p] = state
 
     def uncover(self, p):
+        #don't let user die on his first move
+        if self.mines[p] and self.game_state == State.not_started:
+            #move mine to first open spot you can find
+            for candidate_p in self.iter_cells():
+                if p != candidate_p and not self.mines[candidate_p]:
+                    self.mines[p] = False
+                    self.mines[candidate_p] = True
+                    break
+
         if self.cell_states[p] not in {State.covered, State.unsure}:
             return
         to_uncover = self.get_group(p)
