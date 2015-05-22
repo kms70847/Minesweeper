@@ -1,13 +1,13 @@
 from Tkinter import *
 from collections import OrderedDict
-import json
+import pickle
 
 score_filename = "high_scores.txt"
 
 def try_load(filename, default=None):
     try:
         with open(filename) as file:
-            return json.load(file)
+            return pickle.load(file)
     except IOError:
         return default
 
@@ -28,7 +28,7 @@ def update_scores(level, name, score):
     scores = get_scores()
     scores[level] = (name, score)
     with open(score_filename, "w") as file:
-        json.dump(scores, file)
+        pickle.dump(scores, file)
 
 class HighScoreWindow(Toplevel):
     def __init__(self, root):
