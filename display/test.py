@@ -1,9 +1,11 @@
 from Tkinter import *
 from PIL import Image, ImageTk
+from time import time
+
 from stateView import StateView
 from settingsWindow import SettingsWindow
 from numberDisplay import NumberDisplay
-from time import time
+import highscores
 
 import sys
 import os.path
@@ -57,6 +59,10 @@ def show_settings():
         cur_difficulty = window.setting_chosen
         new_game()
 
+def show_high_scores():
+    window = highscores.HighScoreWindow(root)
+    window.grab_set()
+    root.wait_window(window)
 
 import random
 random.seed(0)
@@ -73,6 +79,7 @@ gamemenu = Menu(menubar, tearoff=0)
 menubar.add_cascade(label="Game", menu=gamemenu)
 gamemenu.add_command(label = "New", command=new_game)
 gamemenu.add_command(label = "Difficulty", command=show_settings)
+gamemenu.add_command(label = "High Scores", command=show_high_scores)
 gamemenu.add_command(label = "Exit", command=root.quit)
 
 action_bar = Frame(root)
