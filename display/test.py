@@ -72,7 +72,6 @@ def show_high_scores():
     root.wait_window(window)
 
 import random
-random.seed(0)
 
 #beginner: 9,9,10
 #intermediate: 16, 16, 40
