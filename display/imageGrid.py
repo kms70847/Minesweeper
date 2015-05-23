@@ -55,6 +55,9 @@ class ImageGrid(Canvas):
         self.bind("<ButtonPress-3>"  , lambda event: self.button_event(event, "right" , "down"))
         self.bind("<ButtonRelease-3>", lambda event: self.button_event(event, "right" , "up"  ))
 
+        self.cursor_position = None
+        self.bind("<Motion>", self.cursor_moved_event)
+
     def button_event(self, event, button, state):
         row = (event.y - self.left_margin) / self.image_height
         col = (event.x - self.left_margin) / self.image_width

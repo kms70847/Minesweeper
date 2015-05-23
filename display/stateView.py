@@ -22,7 +22,11 @@ class StateView(ImageGrid):
         #legal values: None, "Normal", "Smart"
         self.click_mode = None
 
+        #cells that look uncovered because the user is holding down the mouse button
+        self.depressed_cells = set()
+
         self.bind_cell("button", self.clicked)
+        self.bind_cell("cursor_moved", self.update_depressed_images)
 
         self.state.bind(self.state_changed)
 
@@ -77,7 +81,8 @@ class StateView(ImageGrid):
         assert all(x in ["left", "right"] for seq in [cur_state, prev_state] for x in seq)
 
         if prev_state == [] and cur_state == ['left']:
-            self.click_mode =  "Normal"
+            self.click_mode = "Normal"
+            self.update_depressed_images(pos, pos)
         elif prev_state == [] and cur_state == ['right']:
             self.try_mark(pos)
         elif prev_state == ['left'] and cur_state == []:
@@ -88,14 +93,43 @@ class StateView(ImageGrid):
             else:
                 raise Exception("Unexpected click mode {}".format(self.click_mode))
             self.click_mode = None
+            self.update_depressed_images(pos, pos)
         elif cur_state == ['left', 'right']:
             self.click_mode = "Smart"
+            self.update_depressed_images(pos, pos)
         elif prev_state == ['left', 'right'] and cur_state == ['left']:
             self.try_smart_click(pos)
         elif prev_state == ['left', 'right'] and cur_state == ['right']:
             self.try_smart_click(pos)
             self.click_mode = None
+            self.update_depressed_images(pos, pos)
         elif prev_state == ['right'] and cur_state == []:
             pass
         else:
             raise Exception("Unexpected state change from {} to {}".format(prev_state, cur_state))
+
+    def update_depressed_images(self, pos, old_pos):
+        def restore(cell):
+            self.set_image(cell, self.state.get_name(cell))
+        def iter_3x3(pos):
+            for cell in self.state.mines.neighbors_in_range(pos):
+                yield cell
+            yield pos
+
+        may_be_depressed = lambda pos: self.state.get_name(pos) in {"covered", "unsure"}
+
+        to_depress = set()
+        if self.click_mode == "Normal":
+            if self.in_range(pos) and may_be_depressed(pos):
+                to_depress.add(pos)
+        elif self.click_mode == "Smart":
+            for cell in iter_3x3(pos):
+                if may_be_depressed(cell):
+                    to_depress.add(cell)
+
+        to_unpress = self.depressed_cells - to_depress
+        for cell in to_unpress:
+            restore(cell)
+        for cell in to_depress - self.depressed_cells:
+            self.set_image(cell, "uncovered")
+        self.depressed_cells = to_depress
