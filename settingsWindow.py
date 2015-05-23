@@ -1,4 +1,4 @@
-from Tkinter import *
+from tkinter_ex import *
 
 """Abstract base class for an extended Entry widget that performs per-keystroke validation.
 subclasses should override `is_valid` with their own custom behavior.

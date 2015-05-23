@@ -1,5 +1,4 @@
-from Tkinter import *
-import tkSimpleDialog
+from tkinter_ex import *
 from PIL import Image, ImageTk
 from time import time
 

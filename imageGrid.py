@@ -1,4 +1,4 @@
-from Tkinter import *
+from tkinter_ex import *
 from PIL import Image, ImageTk
 from geometry import Point
 

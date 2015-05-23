@@ -1,6 +1,6 @@
 from imageGrid import ImageGrid
-from Tkinter import *
 from geometry import Point
+from tkinter_ex import *
 
 class NumberDisplay(ImageGrid):
     def __init__(self, root, digits=3):
