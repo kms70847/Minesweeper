@@ -39,7 +39,7 @@ class HighScoreWindow(Toplevel):
 
         label_frame = Frame(self)
         label_frame.pack()
-        for y, (key, values) in enumerate(scores.iteritems()):
+        for y, (key, values) in enumerate(scores.items()):
             data = (key,) + values
             for x, value in enumerate(data):
                 Label(label_frame, text=value).grid(column=x, row=y)

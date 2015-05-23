@@ -17,11 +17,11 @@ class ImageGrid(Canvas):
         self.photo_refs = []
 
         names = kwargs.pop("names")
-        self.images_by_name = {name: self.load_image(filename) for name, filename in names.iteritems()}
-        self.image_height = max(image.height() for image in self.images_by_name.itervalues())
-        self.image_width = max(image.width() for image in self.images_by_name.itervalues())
+        self.images_by_name = {name: self.load_image(filename) for name, filename in names.items()}
+        self.image_height = max(image.height() for image in self.images_by_name.values())
+        self.image_width = max(image.width() for image in self.images_by_name.values())
 
-        default_image = kwargs.pop("default", sorted(self.images_by_name.iterkeys())[0])
+        default_image = kwargs.pop("default", sorted(self.images_by_name.keys())[0])
         
         self.rows = kwargs.pop("rows")
         self.cols = kwargs.pop("cols")
@@ -61,7 +61,7 @@ class ImageGrid(Canvas):
     def button_event(self, event, button, state):
         row = (event.y - self.left_margin) / self.image_height
         col = (event.x - self.left_margin) / self.image_width
-        cur = Point(col, row)
+        cur = Point(col, row).map(int)
         if state == "down":
             self.button_pressed_position[button] = Point(col, row)
             self.button_states[button] = "down"
@@ -74,7 +74,7 @@ class ImageGrid(Canvas):
     def cursor_moved_event(self, event):
         row = (event.y - self.left_margin) / self.image_height
         col = (event.x - self.left_margin) / self.image_width
-        cur = Point(col, row)
+        cur = Point(col, row).map(int)
         if self.cursor_position != cur:
             old_position = self.cursor_position
             self.cursor_position = cur

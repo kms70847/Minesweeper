@@ -71,7 +71,7 @@ class StateView(ImageGrid):
         if self.state.game_state not in {self.state.in_progress, self.state.not_started}:
             return
         #determine current and previous state for our subsequent DFA
-        cur_state = sorted(b for b,v in self.button_states.iteritems() if b != "middle" and v == "down")
+        cur_state = sorted(b for b,v in self.button_states.items() if b != "middle" and v == "down")
         prev_state = cur_state[:]
         if state == "down":
             prev_state.remove(button)
