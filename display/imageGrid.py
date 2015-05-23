@@ -45,7 +45,7 @@ class ImageGrid(Canvas):
                 self.images[cell] = default_image
                 self.ids[cell] = self.create_image(x,y, image=self.images_by_name[default_image], anchor="nw")
 
-        self.callbacks = []
+        self.callbacks = {"button": [], "cursor_moved": []}
         self.button_pressed_position = {key: None for key in ["left", "right", "middle"]}
         self.button_states = {key: "up" for key in ["left", "right", "middle"]}
         self.bind("<ButtonPress-1>"  , lambda event: self.button_event(event, "left"  , "down"))
@@ -65,20 +65,38 @@ class ImageGrid(Canvas):
         else:
             self.button_states[button] = "up"
         
-        for callback in self.callbacks:
+        for callback in self.callbacks["button"]:
             callback(event, cur, button, state, self.button_pressed_position[button])
 
+    def cursor_moved_event(self, event):
+        row = (event.y - self.left_margin) / self.image_height
+        col = (event.x - self.left_margin) / self.image_width
+        cur = Point(col, row)
+        if self.cursor_position != cur:
+            old_position = self.cursor_position
+            self.cursor_position = cur
+            for callback in self.callbacks["cursor_moved"]:
+                callback(self.cursor_position, old_position)
+
     """
-        registers a callback with the class, which triggers on mouse movement.
-        callback will be executed with these parameters.
+        registers a callback with the class, which triggers on mouse activity. 
+
+        If event_name is "button", event triggers when a mouse button is pressed or released. 
+        Callback will be executed with these parameters.
         event - the raw Tkinter event.
         pos - a (col, row) tuple indicating which image was pressed.
         button - "left" or "right"
         state - "up" or "down"
         last_down_pos - a (col, row) tuple indicating which cell the mouse button was pressed down on. equal to `pos` for down clicks.
+
+        If event_name is "cursor_moved", event triggers when the cursor moves into a new cell of the grid, including out-of-bounds ones.
+        Callback will be executed with these parameters.
+        position - the cell the cursor is in now.
+        old_position - the cell the cursor used to be in.
     """
-    def bind_cell(self, callback):
-        self.callbacks.append(callback)
+    def bind_cell(self, event_name, callback):
+        assert event_name in {"button", "cursor_moved"}
+        self.callbacks.setdefault(event_name, []).append(callback)
 
     def get_image(self, p):
         return self.images[p]
