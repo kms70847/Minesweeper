@@ -68,7 +68,8 @@ class StateView(ImageGrid):
 
     def clicked(self, event, pos, button, state, last_down_pos):
         if button == "middle": return
-
+        if self.state.game_state not in {self.state.in_progress, self.state.not_started}:
+            return
         #determine current and previous state for our subsequent DFA
         cur_state = sorted(b for b,v in self.button_states.iteritems() if b != "middle" and v == "down")
         prev_state = cur_state[:]
@@ -130,6 +131,7 @@ class StateView(ImageGrid):
         to_unpress = self.depressed_cells - to_depress
         for cell in to_unpress:
             restore(cell)
-        for cell in to_depress - self.depressed_cells:
-            self.set_image(cell, "uncovered")
+        if self.state.game_state in {self.state.in_progress, self.state.not_started}:
+            for cell in to_depress - self.depressed_cells:
+                self.set_image(cell, "uncovered")
         self.depressed_cells = to_depress
