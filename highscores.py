@@ -6,7 +6,7 @@ score_filename = "high_scores.txt"
 
 def try_load(filename, default=None):
     try:
-        with open(filename) as file:
+        with open(filename, "rb") as file:
             return pickle.load(file)
     except IOError:
         return default
@@ -22,12 +22,12 @@ def get_scores():
 
 def qualifies(level, score):
     scores = get_scores()
-    return level in scores and score < scores[level]
+    return level in scores and score < scores[level][1]
 
 def update_scores(level, name, score):
     scores = get_scores()
     scores[level] = (name, score)
-    with open(score_filename, "w") as file:
+    with open(score_filename, "wb") as file:
         pickle.dump(scores, file)
 
 class HighScoreWindow(Toplevel):
