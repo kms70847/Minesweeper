@@ -3,7 +3,15 @@ from geometry import Point
 from tkinter_ex import *
 
 class NumberDisplay(ImageGrid):
+    """Widget that resembles an old-school LED display."""
+
     def __init__(self, root, digits=3):
+        """
+        Arguments:
+        root - the parent window.
+        digits - the maximum number of digits the display can hold. Default is 3.
+        """
+
         names = {str(x): "images/big_{}.png".format(x) for x in range(10)}
         names["empty"] = "images/big_empty.png"
         names["minus"] = "images/big_minus.png"
@@ -11,9 +19,18 @@ class NumberDisplay(ImageGrid):
         self.digits = digits
         self.max_value = 10**self.digits - 1
         self.value = None
+
     def get(self):
+        """Return the currently displayed value."""
+
         return self.value
+
     def set(self, value):
+        """Update the display with a new value.
+        Arguments:
+        value - the value to be displayed. May be an integer of appropriate size, or None.
+        """
+
         self.value = value
         if value is None:
             for i in range(self.digits):

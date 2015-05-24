@@ -4,9 +4,19 @@ from geometry import Point
 import random
 
 class State(Broadcaster):
+    """Representation of the game state of Minesweeper."""
+
     covered, uncovered, flagged, unsure = 1,2,3,4
     won, lost, not_started, in_progress = 1,2,3,4
+
     def __init__(self, width, height, num_mines):
+        """
+        Positional arguments:
+        width: the width of the game field.
+        height: the height of the game field.
+        num_mines: the number of mines in the game field.
+        """
+
         assert num_mines <= width*height
         Broadcaster.__init__(self)
         self.width, self.height = width, height
@@ -18,19 +28,28 @@ class State(Broadcaster):
         self.cell_states = Matrix(width, height, State.covered)
         self.cell_state_counts = {State.covered: width*height, State.uncovered: 0, State.flagged: 0, State.unsure: 0}
         self.game_state = State.not_started
-    #returns the number of mines in adjacent cells
+
     def neighboring_mine_count(self, p):
+        """Return the number of mines in adjacent cells."""
+
         return sum(1 for cell in self.mines.neighbors_in_range(p) if self.mines[cell])
 
     def neighboring_state_count(self, p, state):
+        """Return the number of adjacent cells that have a particular state."""
+
         return sum(1 for cell in self.cell_states.neighbors_in_range(p) if self.cell_states[cell] == state)
 
     def state_count(self, state):
+        """Return the number of cells in the whole field that have a particular state."""
+
         return self.cell_state_counts[state]
 
-    #returns a collection of the cells that would be uncovered if `p` was uncovered.
-    #cells with a count of 0 uncover their neighbors in a chain reaction.
     def get_group(self, p):
+        """
+        Return a collection of the cells that would be uncovered if `p` was uncovered.
+        Cells with a count of 0 uncover their neighbors in a chain reaction.
+        """
+
         to_visit = set()
         to_visit.add(p)
         seen = set()
@@ -51,6 +70,11 @@ class State(Broadcaster):
         return seen
 
     def get_name(self, p):
+        """
+        Return a string representative of the state of the cell.
+        Possible values are mine, uncovered, covered, flagged, unsure, or a number between 1 and 8 inclusive.
+        """
+
         if self.cell_states[p] == State.uncovered:
             if self.mines[p]:
                 return "mine"
@@ -63,17 +87,29 @@ class State(Broadcaster):
             return {State.covered: "covered", State.flagged: "flagged", State.unsure: "unsure"}[self.cell_states[p]]
 
     def iter_cells(self):
+        """Yield each Point corresponding to a cell on the field."""
+
         for i in range(self.width):
             for j in range(self.height):
                 yield Point(i,j)
 
     def set_state(self, p, state):
+        """
+        Set the state of the cell.
+        (Whether a cell has a mine can't be set with this method; modify State.mines for that.)
+        """
+
         old_state = self.cell_states[p]
         self.cell_state_counts[old_state] -= 1
         self.cell_state_counts[state] += 1
         self.cell_states[p] = state
 
     def uncover(self, p):
+        """
+        Uncover the cell, if possible (i.e. it's in range and not flagged.
+        This can trigger game loss/win events, and uncover multiple cells in a chain reaction.
+        """
+
         #don't let user die on his first move
         if self.mines[p] and self.game_state == State.not_started:
             #move mine to first open spot you can find
@@ -106,6 +142,8 @@ class State(Broadcaster):
                 self.broadcast("game_ended")
 
     def mark(self, p, state):
+        """Like `set_state`, but triggers a "marked" event."""
+
         assert self.cell_states[p] != State.uncovered
         assert state in {State.flagged, State.unsure, State.covered}
         self.set_state(p, state)

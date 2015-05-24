@@ -3,14 +3,16 @@ from PIL import Image, ImageTk
 from geometry import Point
 
 class ImageGrid(Canvas):
-    """
+    """Tkinter widget that displays images in a grid."""
+
+    def __init__(self, root, **kwargs):
+        """
         keyword arguments:
         names - a dictionary whose keys are strings and whose values are filenames.
         rows, cols - positive integers.
         margin - a non-negative integer. default is 0.
         default - a key from names. If none is supplied, the lexicographically first name will be chosen.
-    """
-    def __init__(self, root, **kwargs):
+        """
 
         #collection of ImageTk.PhotoImages.
         #shouldn't be accessed anywhere; we only need it to prevent premature garbage collection.
@@ -32,8 +34,6 @@ class ImageGrid(Canvas):
         kwargs["width"]  = self.cols * self.image_width  + self.left_margin + self.right_margin
         kwargs["height"] = self.rows * self.image_height + self.left_margin + self.right_margin
         Canvas.__init__(self, root, **kwargs)
-
-
 
         self.ids = {}
         self.images = {}
@@ -59,6 +59,11 @@ class ImageGrid(Canvas):
         self.bind("<Motion>", self.cursor_moved_event)
 
     def button_event(self, event, button, state):
+        """
+        Callback that triggers when the user clicks or un-clicks.
+        Alert listeners that registered using `bind_cell`.
+        """
+
         row = (event.y - self.left_margin) / self.image_height
         col = (event.x - self.left_margin) / self.image_width
         cur = Point(col, row).map(int)
@@ -72,6 +77,11 @@ class ImageGrid(Canvas):
             callback(event, cur, button, state, self.button_pressed_position[button])
 
     def cursor_moved_event(self, event):
+        """
+        Callback that triggers when the user moves the mouse.
+        Alert listeners that registered using `bind_cell`.
+        """
+
         row = (event.y - self.left_margin) / self.image_height
         col = (event.x - self.left_margin) / self.image_width
         cur = Point(col, row).map(int)
@@ -81,8 +91,9 @@ class ImageGrid(Canvas):
             for callback in self.callbacks["cursor_moved"]:
                 callback(self.cursor_position, old_position)
 
-    """
-        registers a callback with the class, which triggers on mouse activity. 
+    def bind_cell(self, event_name, callback):
+        """
+        Register a callback with the class, which triggers on mouse activity. 
 
         If event_name is "button", event triggers when a mouse button is pressed or released. 
         Callback will be executed with these parameters.
@@ -96,23 +107,34 @@ class ImageGrid(Canvas):
         Callback will be executed with these parameters.
         position - the cell the cursor is in now.
         old_position - the cell the cursor used to be in.
-    """
-    def bind_cell(self, event_name, callback):
+        """
+
         assert event_name in {"button", "cursor_moved"}
         self.callbacks.setdefault(event_name, []).append(callback)
 
     def get_image(self, p):
+        """Return the name of the image currently displayed at cell `p`."""
+
         return self.images[p]
 
-    def set_image(self, p,name):
+    def set_image(self, p, name):
+        """Update the cell at `p` to display the image associated to `name`."""
+
         id = self.ids[p]
         self.itemconfig(id, image = self.images_by_name[name])
         self.images[p] = name
 
     def in_range(self, p):
+        """Return True if `p` lies within the bounds of the grid."""
+
         return 0 <= p.x < self.cols and 0 <= p.y < self.rows
 
     def load_image(self, filename):
+        """
+        Return a PhotoImage instance for the given filename.
+        A reference will be kept indefinitely to prevent premature garbage collection.
+        """
+
         if filename.endswith(".gif"):
             return PhotoImage(file=filename)
         else:

@@ -1,16 +1,23 @@
 from imageGrid import ImageGrid
 
-"""
-returns the element in `seq` that appears after `item`.
-wraps around to the beginning of the list if necessary.
-"""
 def after(seq, item):
+    """
+    returns the element in `seq` that appears after `item`.
+    wraps around to the beginning of the list if necessary.
+    """
     idx = seq.index(item)
     idx = (idx + 1) % len(seq)
     return seq[idx]
 
 class StateView(ImageGrid):
+    """Tkinter widget that represents the main field of play for the game."""
+
     def __init__(self, root, state, **kwargs):
+        """Positional arguments:
+        root - the parent window of this widget.
+        state - the State object representing the game.
+        """
+
         self.state = state
         
         kwargs["names"] = {name: "images/{}.png".format(name) for name in "covered uncovered 1 2 3 4 5 6 7 8 flagged unsure mine".split()}
@@ -31,6 +38,8 @@ class StateView(ImageGrid):
         self.state.bind(self.state_changed)
 
     def state_changed(self, event, *args):
+        """Callback that fires whenever the game state changes."""
+
         if event == "uncovered":
             cells = args[0]
             for cell in cells:
@@ -45,6 +54,11 @@ class StateView(ImageGrid):
                         self.set_image(p, "mine")
 
     def try_mark(self, pos):
+        """
+        Attempt to toggle the state of the cell at `pos` between covered/flagged/unsure.
+        Do nothing if the cell is out of range or uncovered.
+        """
+
         if not self.in_range(pos):
             return
         state = self.state.cell_states[pos]
@@ -55,11 +69,18 @@ class StateView(ImageGrid):
         self.state.mark(pos, new_state)
 
     def try_click(self, pos):
+        """
+        Attempt to uncover the cell at `pos`.
+        Do nothing if the cell is out of range.
+        """
+
         if not self.in_range(pos):
             return
         self.state.uncover(pos)
 
     def try_smart_click(self, pos):
+        """Uncover all covered neighboring cells, if it can be trivially deduced that none of them are mines."""
+
         if self.state.cell_states[pos] == self.state.uncovered:
             flagged_neighbor_count = self.state.neighboring_state_count(pos, self.state.flagged)
             if self.state.neighboring_mine_count(pos) <= flagged_neighbor_count:
@@ -67,6 +88,11 @@ class StateView(ImageGrid):
                     self.state.uncover(cell)
 
     def clicked(self, event, pos, button, state, last_down_pos):
+        """
+        Callback that fires whenever the user clicks on this widget.
+        See `ImageGrid.bind_cell` for a description of positional parameters.
+        """
+
         if button == "middle": return
         if self.state.game_state not in {self.state.in_progress, self.state.not_started}:
             return
@@ -110,9 +136,16 @@ class StateView(ImageGrid):
             raise Exception("Unexpected state change from {} to {}".format(prev_state, cur_state))
 
     def update_depressed_images(self, pos, old_pos):
+        """Update the representation of cells that appear depressed because the user is holding down the left mouse button."""
+
         def restore(cell):
+            """Restore the cell to its normal representation."""
+
             self.set_image(cell, self.state.get_name(cell))
+
         def iter_3x3(pos):
+            """Iterate over the cell and its neighbors."""
+
             for cell in self.state.mines.neighbors_in_range(pos):
                 yield cell
             yield pos
