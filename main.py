@@ -68,12 +68,7 @@ def show_high_scores():
     root.wait_window(window)
 
 def debug():
-    reset_button.set_image("images/flagged.png")
-    cur_time = 10
-    if highscores.qualifies(cur_difficulty[0], cur_time):
-        name = askstring("Enter name", "New high score! Enter name:", initialvalue = "Anonymous", parent=root)
-        if name:
-            highscores.update_scores(cur_difficulty[0], name, cur_time)
+    pass
 
 import random
 
@@ -90,7 +85,7 @@ menubar.add_cascade(label="Game", menu=gamemenu)
 gamemenu.add_command(label = "New", command=new_game)
 gamemenu.add_command(label = "Difficulty", command=show_settings)
 gamemenu.add_command(label = "High Scores", command=show_high_scores)
-gamemenu.add_command(label = "Debug", command=debug)
+#gamemenu.add_command(label = "Debug", command=debug)
 gamemenu.add_command(label = "Exit", command=root.quit)
 
 action_bar = Frame(root)
