@@ -3,11 +3,12 @@ from broadcaster import Broadcaster
 from geometry import Point
 import random
 
+
 class State(Broadcaster):
     """Representation of the game state of Minesweeper."""
 
-    covered, uncovered, flagged, unsure = 1,2,3,4
-    won, lost, not_started, in_progress = 1,2,3,4
+    covered, uncovered, flagged, unsure = 1, 2, 3, 4
+    won, lost, not_started, in_progress = 1, 2, 3, 4
 
     def __init__(self, width, height, num_mines):
         """
@@ -17,16 +18,16 @@ class State(Broadcaster):
         num_mines: the number of mines in the game field.
         """
 
-        assert num_mines <= width*height
+        assert num_mines <= width * height
         Broadcaster.__init__(self)
         self.width, self.height = width, height
         self.num_mines = num_mines
         self.mines = Matrix(width, height)
-        candidate_positions = [Point(x,y) for x in range(width) for y in range(height)]
+        candidate_positions = [Point(x, y) for x in range(width) for y in range(height)]
         for location in random.sample(candidate_positions, num_mines):
             self.mines[location] = True
         self.cell_states = Matrix(width, height, State.covered)
-        self.cell_state_counts = {State.covered: width*height, State.uncovered: 0, State.flagged: 0, State.unsure: 0}
+        self.cell_state_counts = {State.covered: width * height, State.uncovered: 0, State.flagged: 0, State.unsure: 0}
         self.game_state = State.not_started
 
     def neighboring_mine_count(self, p):
@@ -91,7 +92,7 @@ class State(Broadcaster):
 
         for i in range(self.width):
             for j in range(self.height):
-                yield Point(i,j)
+                yield Point(i, j)
 
     def set_state(self, p, state):
         """
@@ -110,16 +111,17 @@ class State(Broadcaster):
         This can trigger game loss/win events, and uncover multiple cells in a chain reaction.
         """
 
-        #don't let user die on his first move
+        """Don't let user die on his first move."""
         if self.mines[p] and self.game_state == State.not_started:
-            #move mine to first open spot you can find
+
+            """Move mine to first open spot you can find."""
             for candidate_p in self.iter_cells():
                 if p != candidate_p and not self.mines[candidate_p]:
                     self.mines[p] = False
                     self.mines[candidate_p] = True
                     break
 
-        #can't click on flags or question marks
+        """Can't click on flags or question marks."""
         if self.cell_states[p] not in {State.covered, State.unsure}:
             return
 
@@ -127,7 +129,7 @@ class State(Broadcaster):
         for cell in to_uncover:
             self.set_state(cell, State.uncovered)
 
-        #broadcast events
+        """Broadcast events."""
         if self.game_state == State.not_started:
             self.game_state = State.in_progress
             self.broadcast("started")

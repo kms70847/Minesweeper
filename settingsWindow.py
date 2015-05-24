@@ -1,5 +1,6 @@
 from tkinter_ex import *
 
+
 class StrictEntry(Entry):
     """
     Abstract base class for an extended Entry widget that performs per-keystroke validation.
@@ -34,15 +35,18 @@ class DigitEntry(StrictEntry):
         """Return the contents of the Entry. Value will be an integer, or None if there are no contents."""
 
         text = self.var.get()
-        if not text: return None
-        else: return int(text)
+        if not text:
+            return None
+        else:
+            return int(text)
+
 
 class SettingsWindow(Toplevel):
     """Pop-up window that lets the user configure settings for the game. I.e., the difficulty level."""
 
     def __init__(self, root, cur_setting, *args, **kwargs):
         Toplevel.__init__(self, root, *args, **kwargs)
-        self.resizable(0,0)
+        self.resizable(0, 0)
         self.title("Settings")
 
         self.settings = (
@@ -59,7 +63,7 @@ class SettingsWindow(Toplevel):
                 self.v.set(idx)
 
         custom_frame = Frame(self)
-        Radiobutton(custom_frame, text="Custom - width: ", variable=self.v, value=len(self.settings)+1).pack(side=LEFT)
+        Radiobutton(custom_frame, text="Custom - width: ", variable=self.v, value=len(self.settings) + 1).pack(side=LEFT)
         self.custom_width = DigitEntry(custom_frame, width=3, value=cur_setting[1])
         self.custom_width.pack(side=LEFT)
         Label(custom_frame, text=" height: ").pack(side=LEFT)
@@ -69,10 +73,10 @@ class SettingsWindow(Toplevel):
         self.custom_mines = DigitEntry(custom_frame, width=3, value=cur_setting[3])
         self.custom_mines.pack(side=LEFT)
 
-        custom_frame.pack(padx=(0,10))
+        custom_frame.pack(padx=(0, 10))
 
         if cur_setting[0] == "Custom":
-            self.v.set(len(self.settings)+1)
+            self.v.set(len(self.settings) + 1)
 
         button_row = Frame(self)
         Button(button_row, text="OK", width=10, command=self.ok_clicked).pack(side=LEFT, padx=10, pady=10)

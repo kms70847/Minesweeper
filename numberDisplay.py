@@ -2,6 +2,7 @@ from imageGrid import ImageGrid
 from geometry import Point
 from tkinter_ex import *
 
+
 class NumberDisplay(ImageGrid):
     """Widget that resembles an old-school LED display."""
 
@@ -34,14 +35,14 @@ class NumberDisplay(ImageGrid):
         self.value = value
         if value is None:
             for i in range(self.digits):
-                self.set_image(Point(i,0), "empty")
+                self.set_image(Point(i, 0), "empty")
         elif isinstance(value, int):
             s = str(value)
             assert len(s) <= self.digits
             while len(s) < self.digits:
                 s = " " + s
             for idx, c in enumerate(s):
-                name = {" ": "empty", "-": "minus"}.get(c,c)
-                self.set_image(Point(idx,0), name)
+                name = {" ": "empty", "-": "minus"}.get(c, c)
+                self.set_image(Point(idx, 0), name)
         else:
             raise ValueError("value may only be integer or None")

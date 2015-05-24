@@ -1,12 +1,15 @@
 from geometry import Point
 
+
 def neighbors(p):
     """Yield all of the Points that are adjacent to `p`, including diagonally."""
 
     for dx in range(-1, 2):
         for dy in range(-1, 2):
-            if dx == 0 and dy == 0: continue
+            if dx == 0 and dy == 0:
+                continue
             yield p + Point(dx, dy)
+
 
 class Matrix:
     """Fixed-size two dimensional collection."""
@@ -18,7 +21,7 @@ class Matrix:
         height: the number of rows in the collection.
         default: the initial value of each cell in the collection. Default is None.
         """
-        
+
         self.width = width
         self.height = height
         self.data = [[default for _ in range(width)] for __ in range(height)]

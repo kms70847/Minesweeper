@@ -1,7 +1,8 @@
 class Broadcaster:
     """
     An event-broadcasting object.
-    Interested listeners can register callbacks that get executed when the object has something to broadcast.
+    Interested listeners can register callbacks that get executed
+    when the object has something to broadcast.
     """
 
     def __init__(self):
@@ -15,7 +16,9 @@ class Broadcaster:
     def unbind(self, func):
         """
         Unregister `func` as a callback.
-        Note: `func` must be referentially equal to the object used to bind in the first place. Particular care must be taken for anonymous lambdas.
+        Note: `func` must be referentially equal to the object
+        used to bind in the first place.
+        Particular care must be taken for anonymous lambdas.
         """
 
         self.callbacks.remove(func)

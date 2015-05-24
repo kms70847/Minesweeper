@@ -1,5 +1,6 @@
 from imageGrid import ImageGrid
 
+
 def after(seq, item):
     """
     returns the element in `seq` that appears after `item`.
@@ -8,6 +9,7 @@ def after(seq, item):
     idx = seq.index(item)
     idx = (idx + 1) % len(seq)
     return seq[idx]
+
 
 class StateView(ImageGrid):
     """Tkinter widget that represents the main field of play for the game."""
@@ -19,17 +21,17 @@ class StateView(ImageGrid):
         """
 
         self.state = state
-        
+
         kwargs["names"] = {name: "images/{}.png".format(name) for name in "covered uncovered 1 2 3 4 5 6 7 8 flagged unsure mine".split()}
         kwargs["rows"] = state.height
         kwargs["cols"] = state.width
         kwargs["default"] = "covered"
         ImageGrid.__init__(self, root, **kwargs)
 
-        #legal values: None, "Normal", "Smart"
+        """legal values: None, "Normal", "Smart" """
         self.click_mode = None
 
-        #cells that look uncovered because the user is holding down the mouse button
+        """Cells that look uncovered because the user is holding down the mouse button"""
         self.depressed_cells = set()
 
         self.bind_cell("button", self.clicked)
@@ -63,7 +65,7 @@ class StateView(ImageGrid):
             return
         state = self.state.cell_states[pos]
         valid_states = [self.state.covered, self.state.flagged, self.state.unsure]
-        if state not in valid_states: 
+        if state not in valid_states:
             return
         new_state = after(valid_states, state)
         self.state.mark(pos, new_state)
@@ -93,18 +95,20 @@ class StateView(ImageGrid):
         See `ImageGrid.bind_cell` for a description of positional parameters.
         """
 
-        if button == "middle": return
+        if button == "middle":
+            return
         if self.state.game_state not in {self.state.in_progress, self.state.not_started}:
             return
-        #determine current and previous state for our subsequent DFA
-        cur_state = sorted(b for b,v in self.button_states.items() if b != "middle" and v == "down")
+
+        """Determine current and previous state for our subsequent DFA."""
+        cur_state = sorted(b for b, v in self.button_states.items() if b != "middle" and v == "down")
         prev_state = cur_state[:]
         if state == "down":
             prev_state.remove(button)
         else:
             prev_state.append(button)
         prev_state.sort()
-        #collections should contain nothing but left or right
+        """Collections should contain nothing but left or right."""
         assert all(x in ["left", "right"] for seq in [cur_state, prev_state] for x in seq)
 
         if prev_state == [] and cur_state == ['left']:
@@ -150,7 +154,10 @@ class StateView(ImageGrid):
                 yield cell
             yield pos
 
-        may_be_depressed = lambda pos: self.state.get_name(pos) in {"covered", "unsure"}
+        def may_be_depressed(pos):
+            """Return True if the cell is allowed to be depressed."""
+
+            return self.state.get_name(pos) in {"covered", "unsure"}
 
         to_depress = set()
         if self.click_mode == "Normal":
