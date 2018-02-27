@@ -1,11 +1,11 @@
 # Minesweeper
 A clone of classic Microsoft Minesweeper.
 
-#How to run
+# How to run
 Execute `main.py`.
 
-#Compatibility
+# Compatibility
 Runs on Python 2.7 and 3.X.
 
-#Dependencies
+# Dependencies
  - PIL/Pillow
